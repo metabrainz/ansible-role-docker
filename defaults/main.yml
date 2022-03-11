@@ -1,0 +1,19 @@
+---
+# service options
+docker_service_enabled: true
+docker_service_state: started
+docker_restart_handler_state: restarted
+
+# package options
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+# stable, test or nightly
+docker_release_channel: stable
+
+# configuration options
+docker_daemon_config_backup: false
+docker_daemon_config: {}
+docker_daemon_group_config: {}
+docker_daemon_host_config: {}

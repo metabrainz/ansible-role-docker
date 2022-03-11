@@ -1,0 +1,11 @@
+---
+docker_daemon_config:
+  live-restore: false
+  log-driver: json-file
+  iptables: false
+
+docker_group_daemon_config:
+  iptables: true
+  log-opts:
+    max-file: "3"
+    max-size: "100m"
