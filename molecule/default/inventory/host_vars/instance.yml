@@ -1,5 +1,5 @@
 ---
-docker_group_host_config:
+docker_host_daemon_config:
   log-opts:
-    max-file: "3"
+    max-file: "4"
     max-size: "250m"

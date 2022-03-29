@@ -15,5 +15,5 @@ docker_release_channel: stable
 # configuration options
 docker_daemon_config_backup: false
 docker_daemon_config: {}
-docker_daemon_group_config: {}
-docker_daemon_host_config: {}
+docker_group_daemon_config: {}
+docker_host_daemon_config: {}
