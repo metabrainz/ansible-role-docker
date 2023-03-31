@@ -39,12 +39,15 @@
 
 - name: Install Docker daemon configuration
   copy:
-    content: "{{ _docker_combined_daemon_config|to_nice_json }}"
+    content: >-
+      {{
+        docker_daemon_config |
+        combine(docker_group_daemon_config, docker_host_daemon_config, recursive=True) |
+        to_nice_json
+      }}
     dest: "/etc/docker/daemon.json"
     mode: 0644
     backup: "{{ docker_daemon_config_backup }}"
-  vars:
-    _docker_combined_daemon_config: "{{ docker_daemon_config|d({}) | combine(docker_group_daemon_config|d({}), recursive=True) | combine(docker_host_daemon_config|d({}), recursive=True) }}"
   notify: restart docker
 
 - name: Enable and start Docker
