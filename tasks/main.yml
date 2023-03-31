@@ -8,7 +8,7 @@
 - name: Install Docker repository key
   apt_key:
     id: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
-    url: "https://download.docker.com/linux/{{ ansible_distribution|lower }}/gpg"
+    url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
     keyring: "/etc/apt/trusted.gpg.d/docker.gpg"
     state: present
 
@@ -20,7 +20,11 @@
 
 - name: Install Docker repository
   apt_repository:
-    repo: "deb [arch={{ __docker_dpkg_architecture.stdout }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} {{ docker_release_channel }}"
+    repo: >-
+        deb [arch={{ __docker_dpkg_architecture.stdout }}]
+        https://download.docker.com/linux/{{ ansible_distribution | lower }}
+        {{ ansible_distribution_release }}
+        {{ docker_release_channel }}
     filename: docker
     state: present
     update_cache: yes
