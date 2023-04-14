@@ -1,33 +1,42 @@
 ---
-- name: Install required dependencies on Ubuntu >= 20.04
-  apt:
-    name: gnupg
-    state: present
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('20.04', '>=')
-
 - name: Install Docker repository key
-  apt_key:
-    id: "9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
-    url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
-    keyring: "/etc/apt/trusted.gpg.d/docker.gpg"
-    state: present
+  get_url:
+    url: "{{ docker_repository_key_url }}"
+    dest: "{{ docker_repository_key_path }}"
+    checksum: "{{ docker_repository_key_checksum | d(omit) }}"
+    mode: "0644"
 
-- name: Determine dpkg architecture
+- name: Remove Docker repository key from /etc/apt/trusted.gpg.d
+  file:
+    path: /etc/apt/trusted.gpg.d/docker.gpg
+    state: absent
+
+- name: Fetch dpkg architecture
   command: dpkg --print-architecture
   register: __docker_dpkg_architecture
   changed_when: false
   check_mode: false
 
-- name: Install Docker repository
+- name: Remove Docker repository without signed-by
   apt_repository:
     repo: >-
-        deb [arch={{ __docker_dpkg_architecture.stdout }}]
+      deb [arch={{ __docker_dpkg_architecture.stdout }}]
+      https://download.docker.com/linux/{{ ansible_distribution | lower }}
+      {{ ansible_distribution_release }}
+      {{ docker_release_channel }}
+    filename: docker
+    state: absent
+
+- name: Add Docker repository
+  apt_repository:
+    repo: >-
+        deb [arch={{ __docker_dpkg_architecture.stdout }} signed-by={{ docker_repository_key_path }}]
         https://download.docker.com/linux/{{ ansible_distribution | lower }}
         {{ ansible_distribution_release }}
         {{ docker_release_channel }}
     filename: docker
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Install Docker
   apt:
@@ -39,7 +48,7 @@
   file:
     path: "/etc/docker"
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Install Docker daemon configuration
   copy:
@@ -50,7 +59,7 @@
         to_nice_json
       }}
     dest: "/etc/docker/daemon.json"
-    mode: 0644
+    mode: "0644"
     backup: "{{ docker_daemon_config_backup }}"
   notify: restart docker
 
