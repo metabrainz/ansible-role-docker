@@ -1,4 +1,9 @@
 ---
+- name: Check system architecture is supported
+  fail:
+    msg: "{{ ansible_architecture }} is not a supported architecture"
+  when: docker_deb_architecture[ansible_architecture] is not defined
+
 - name: Install Docker repository key
   get_url:
     url: "{{ docker_repository_key_url }}"
@@ -11,16 +16,10 @@
     path: /etc/apt/trusted.gpg.d/docker.gpg
     state: absent
 
-- name: Fetch dpkg architecture
-  command: dpkg --print-architecture
-  register: __docker_dpkg_architecture
-  changed_when: false
-  check_mode: false
-
 - name: Remove Docker repository without signed-by
   apt_repository:
     repo: >-
-      deb [arch={{ __docker_dpkg_architecture.stdout }}]
+      deb [arch={{ docker_deb_architecture[ansible_architecture] }}]
       https://download.docker.com/linux/{{ ansible_distribution | lower }}
       {{ ansible_distribution_release }}
       {{ docker_release_channel }}
@@ -30,7 +29,7 @@
 - name: Add Docker repository
   apt_repository:
     repo: >-
-        deb [arch={{ __docker_dpkg_architecture.stdout }} signed-by={{ docker_repository_key_path }}]
+        deb [arch={{ docker_deb_architecture[ansible_architecture] }} signed-by={{ docker_repository_key_path }}]
         https://download.docker.com/linux/{{ ansible_distribution | lower }}
         {{ ansible_distribution_release }}
         {{ docker_release_channel }}

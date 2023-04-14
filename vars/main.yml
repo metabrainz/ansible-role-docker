@@ -1,0 +1,11 @@
+# Values for ansible_architecture taken from:
+# https://stackoverflow.com/a/45125525
+# Supported architectures taken from:
+# https://download.docker.com/linux/ubuntu/dists/focal/stable/
+docker_deb_architecture:
+  aarch64: arm64
+  armv6l: armhf
+  armv7l: armhf
+  ppc64: ppc64el
+  s390x: s390x
+  x86_64: amd64
