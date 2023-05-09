@@ -50,16 +50,18 @@
     mode: "0755"
 
 - name: Install Docker daemon configuration
-  copy:
-    content: >-
+  template:
+    src: etc/docker/daemon.json.j2
+    dest: /etc/docker/daemon.json
+    mode: "0644"
+    backup: "{{ docker_daemon_config_backup }}"
+  vars:
+    _docker_daemon_config: >-
       {{
         docker_daemon_config |
         combine(docker_group_daemon_config, docker_host_daemon_config, recursive=True) |
         to_nice_json
       }}
-    dest: "/etc/docker/daemon.json"
-    mode: "0644"
-    backup: "{{ docker_daemon_config_backup }}"
   notify: restart docker
 
 - name: Enable and start Docker
