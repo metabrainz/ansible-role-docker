@@ -59,8 +59,7 @@
     _docker_daemon_config: >-
       {{
         docker_daemon_config |
-        combine(docker_group_daemon_config, docker_host_daemon_config, recursive=True) |
-        to_nice_json
+        combine(docker_group_daemon_config, docker_host_daemon_config, recursive=True)
       }}
   notify: restart docker
 
