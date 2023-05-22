@@ -4,4 +4,5 @@
   service:
     name: docker
     state: "{{ docker_restart_handler_state }}"
+  when: docker_service_enabled
   ignore_errors: "{{ ansible_check_mode }}"
