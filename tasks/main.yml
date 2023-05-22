@@ -41,6 +41,7 @@
   apt:
     name: "{{ docker_packages }}"
     state: "{{ docker_package_state }}"
+    policy_rc_d: "{{ docker_package_policy_rc_d }}"
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Create /etc/docker directory

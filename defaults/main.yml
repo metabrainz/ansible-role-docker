@@ -6,6 +6,7 @@ docker_restart_handler_state: restarted
 
 # package options
 docker_package_state: present
+docker_package_policy_rc_d: 101
 docker_packages:
   - docker-ce
   - docker-ce-cli
