@@ -1,4 +1,6 @@
 ---
+docker_package_dpkg_selection: hold
+
 docker_daemon_config:
   live-restore: false
   log-driver: json-file

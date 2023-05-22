@@ -10,23 +10,27 @@
       changed_when: false
       failed_when: result.stat.isreg is not defined or not result.stat.isreg
 
-    - name: Read Docker daemon configuration file
-      slurp:
-        path: "/etc/docker/daemon.json"
-      register: _docker_daemon_config
+    - name: Ensure Docker is running
+      service:
+        name: Docker
+        state: started
+      register: result
+      check_mode: true
+      failed_when: result is changed
 
     - name: Ensure Docker daemon configuration is correct
-      fail:
-        msg: Docker configuration doesn't match expected value
-      when: _config != _expected
-      vars:
-        _config: "{{ _docker_daemon_config.content | b64decode | from_json }}"
-        # recursively merged contents of docker_daemon_config,
-        # docker_group_daemon_config and docker_host_daemon_config
-        _expected:
-          iptables: true
-          live-restore: false
-          log-driver: json-file
-          log-opts:
-            max-file: "4"
-            max-size: "250m"
+      copy:
+        content: |
+          {
+              "iptables": true,
+              "live-restore": false,
+              "log-driver": "json-file",
+              "log-opts": {
+                  "max-file": "4",
+                  "max-size": "250m"
+              }
+          }
+        dest: "/etc/docker/daemon.json"
+        mode: "0644"
+      register: result
+      failed_when: result is changed
