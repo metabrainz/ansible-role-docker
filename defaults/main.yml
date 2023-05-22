@@ -5,6 +5,7 @@ docker_service_state: started
 docker_restart_handler_state: restarted
 
 # package options
+docker_package_state: present
 docker_packages:
   - docker-ce
   - docker-ce-cli
