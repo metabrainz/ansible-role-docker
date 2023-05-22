@@ -54,6 +54,13 @@
              if (docker_containerd_package_version | d())
              else docker_containerd_package }}
 
+- name: Set Docker package dpkg selection states
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: "{{ docker_package_dpkg_selection }}"
+  loop: "{{ [docker_packages, docker_containerd_package] | flatten }}"
+  when: docker_package_dpkg_selection | d()
+
 - name: Create /etc/docker directory
   file:
     path: "/etc/docker"
