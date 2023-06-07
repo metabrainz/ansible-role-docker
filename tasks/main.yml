@@ -37,11 +37,29 @@
     state: present
     update_cache: true
 
-- name: Install Docker
+- name: Install Docker packages
   apt:
-    name: "{{ docker_packages }}"
-    state: present
+    name: "{{ _docker_packages | flatten }}"
+    state: "{{ docker_package_state }}"
+    policy_rc_d: "{{ docker_package_policy_rc_d }}"
   ignore_errors: "{{ ansible_check_mode }}"
+  vars:
+    _docker_packages:
+      - >-
+        {{ (docker_packages | product(['=' + docker_packages_version]) | map('join'))
+             if (docker_packages_version | d())
+             else docker_packages }}
+      - >-
+        {{ '{}={}'.format(docker_containerd_package, docker_containerd_package_version)
+             if (docker_containerd_package_version | d())
+             else docker_containerd_package }}
+
+- name: Set Docker package dpkg selection states
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: "{{ docker_package_dpkg_selection }}"
+  loop: "{{ [docker_packages, docker_containerd_package] | flatten }}"
+  when: docker_package_dpkg_selection | d()
 
 - name: Create /etc/docker directory
   file:

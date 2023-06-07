@@ -5,10 +5,17 @@ docker_service_state: started
 docker_restart_handler_state: restarted
 
 # package options
+#docker_package_dpkg_selection: hold
+docker_package_state: present
+docker_package_policy_rc_d: 101
+
 docker_packages:
   - docker-ce
   - docker-ce-cli
-  - containerd.io
+#docker_packages_version: "5:24.0.1-1~ubuntu.20.04~focal"
+docker_containerd_package: containerd.io
+#docker_containerd_package_version: "1.6.21-1"
+
 # stable, test or nightly
 docker_release_channel: stable
 docker_repository_key_url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
