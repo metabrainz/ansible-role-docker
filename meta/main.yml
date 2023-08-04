@@ -1,0 +1,15 @@
+galaxy_info:
+  role_name: docker
+  namespace: metabrainz
+  company: MetaBrainz Foundation
+  author: Adam James (atj)
+  description: Installs and configures Docker from the official package repositories
+  license: CC0
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+  galaxy_tags:
+    - docker
