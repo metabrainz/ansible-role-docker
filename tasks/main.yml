@@ -1,23 +1,23 @@
 ---
 - name: Check system architecture is supported
-  fail:
+  ansible.builtin.fail:
     msg: "{{ ansible_architecture }} is not a supported architecture"
   when: docker_deb_architecture[ansible_architecture] is not defined
 
 - name: Install Docker repository key
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ docker_repository_key_url }}"
     dest: "{{ docker_repository_key_path }}"
     checksum: "{{ docker_repository_key_checksum | d(omit) }}"
     mode: "0644"
 
 - name: Remove Docker repository key from /etc/apt/trusted.gpg.d
-  file:
+  ansible.builtin.file:
     path: /etc/apt/trusted.gpg.d/docker.gpg
     state: absent
 
 - name: Remove Docker repository without signed-by
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: >-
       deb [arch={{ docker_deb_architecture[ansible_architecture] }}]
       https://download.docker.com/linux/{{ ansible_distribution | lower }}
@@ -27,7 +27,7 @@
     state: absent
 
 - name: Add Docker repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: >-
         deb [arch={{ docker_deb_architecture[ansible_architecture] }} signed-by={{ docker_repository_key_path }}]
         https://download.docker.com/linux/{{ ansible_distribution | lower }}
@@ -38,7 +38,7 @@
     update_cache: true
 
 - name: Install Docker packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ _docker_packages | flatten }}"
     state: "{{ docker_package_state }}"
     policy_rc_d: "{{ docker_package_policy_rc_d }}"
@@ -55,20 +55,20 @@
              else docker_containerd_package }}
 
 - name: Set Docker package dpkg selection states
-  dpkg_selections:
+  ansible.builtin.dpkg_selections:
     name: "{{ item }}"
     selection: "{{ docker_package_dpkg_selection }}"
   loop: "{{ [docker_packages, docker_containerd_package] | flatten }}"
   when: docker_package_dpkg_selection | d()
 
 - name: Create /etc/docker directory
-  file:
+  ansible.builtin.file:
     path: "/etc/docker"
     state: directory
     mode: "0755"
 
 - name: Install Docker daemon configuration
-  template:
+  ansible.builtin.template:
     src: etc/docker/daemon.json.j2
     dest: /etc/docker/daemon.json
     mode: "0644"
@@ -82,7 +82,7 @@
   notify: restart docker
 
 - name: Enable and start Docker
-  service:
+  ansible.builtin.service:
     name: docker
     enabled: "{{ docker_service_enabled }}"
     state: "{{ docker_service_state }}"

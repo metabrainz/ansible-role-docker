@@ -4,14 +4,14 @@
   gather_facts: false
   tasks:
     - name: Ensure Docker is installed
-      stat:
+      ansible.builtin.stat:
         path: "/usr/bin/docker"
       register: result
       changed_when: false
       failed_when: result.stat.isreg is not defined or not result.stat.isreg
 
     - name: Ensure Docker is running
-      service:
+      ansible.builtin.service:
         name: Docker
         state: started
       register: result
@@ -19,7 +19,7 @@
       failed_when: result is changed
 
     - name: Ensure Docker daemon configuration is correct
-      copy:
+      ansible.builtin.copy:
         content: |
           {
               "iptables": true,
