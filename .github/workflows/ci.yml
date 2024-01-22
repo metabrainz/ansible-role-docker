@@ -75,7 +75,7 @@ jobs:
           echo "REQS_HASH=$(sha256sum test-requirements.txt | awk '{ print $1 }')" >> "$GITHUB_ENV"
 
       - name: Cache pip directory
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-py${{ matrix.python }}-ansible${{ matrix.ansible }}-${{ env.REQS_HASH }}
