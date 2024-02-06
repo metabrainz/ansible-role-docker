@@ -10,6 +10,22 @@
       changed_when: false
       failed_when: result.stat.isreg is not defined or not result.stat.isreg
 
+    - name: Ensure specified Docker version is installed
+      ansible.builtin.command: dpkg-query -f '${Version}' -W docker-ce
+      register: result
+      changed_when: false
+      failed_when: >-
+        result.rc != 0 or
+        result.stdout is not match("5:24\.0\.7")
+
+    - name: Ensure specified containerd version is installed
+      ansible.builtin.command: dpkg-query -f '${Version}' -W containerd.io
+      register: result
+      changed_when: false
+      failed_when: >-
+        result.rc != 0 or
+        result.stdout is not match("1\.6\.24")
+
     - name: Ensure Docker is running
       ansible.builtin.service:
         name: Docker

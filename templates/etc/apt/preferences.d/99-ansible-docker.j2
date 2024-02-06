@@ -1,0 +1,14 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# {{ ansible_managed }}
+{% if docker_package_version|d() %}
+
+Package: {{ docker_pinned_packages | join(' ') }}
+Pin: version {{ docker_package_version }}
+Pin-Priority: {{ docker_package_pin_priority }}
+{% endif %}
+{% if docker_containerd_package_version|d() %}
+
+Package: {{ docker_containerd_pinned_packages | join(' ') }}
+Pin: version {{ docker_containerd_package_version }}
+Pin-Priority: {{ docker_containerd_package_pin_priority }}
+{% endif %}

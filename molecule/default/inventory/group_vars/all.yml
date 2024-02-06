@@ -1,5 +1,5 @@
 ---
-docker_package_dpkg_selection: hold
+docker_package_version: "5:24.0.7*"
 
 docker_daemon_config:
   live-restore: false

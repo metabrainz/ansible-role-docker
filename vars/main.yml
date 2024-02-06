@@ -9,3 +9,11 @@ docker_deb_architecture:
   ppc64: ppc64el
   s390x: s390x
   x86_64: amd64
+
+docker_pinned_packages:
+  - docker-ce
+  - docker-ce-cli
+  - docker-ce-rootless-extras
+
+docker_containerd_pinned_packages:
+  - containerd.io
