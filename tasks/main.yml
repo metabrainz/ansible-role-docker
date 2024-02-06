@@ -29,7 +29,8 @@
 - name: Add Docker repository
   ansible.builtin.apt_repository:
     repo: >-
-        deb [arch={{ docker_deb_architecture[ansible_architecture] }} signed-by={{ docker_repository_key_path }}]
+        deb [arch={{ docker_deb_architecture[ansible_architecture] }}
+        signed-by={{ docker_repository_key_path }}]
         https://download.docker.com/linux/{{ ansible_distribution | lower }}
         {{ ansible_distribution_release }}
         {{ docker_release_channel }}
@@ -37,29 +38,18 @@
     state: present
     update_cache: true
 
+- name: Install Docker apt preferences
+  ansible.builtin.template:
+    src: etc/apt/preferences.d/99-ansible-docker.j2
+    dest: /etc/apt/preferences.d/99-ansible-docker
+    mode: "0644"
+
 - name: Install Docker packages
   ansible.builtin.apt:
-    name: "{{ _docker_packages | flatten }}"
+    name: "{{ docker_packages + docker_containerd_packages }}"
     state: "{{ docker_package_state }}"
     policy_rc_d: "{{ docker_package_policy_rc_d }}"
   ignore_errors: "{{ ansible_check_mode }}"
-  vars:
-    _docker_packages:
-      - >-
-        {{ (docker_packages | product(['=' + docker_packages_version]) | map('join'))
-             if (docker_packages_version | d())
-             else docker_packages }}
-      - >-
-        {{ '{}={}'.format(docker_containerd_package, docker_containerd_package_version)
-             if (docker_containerd_package_version | d())
-             else docker_containerd_package }}
-
-- name: Set Docker package dpkg selection states
-  ansible.builtin.dpkg_selections:
-    name: "{{ item }}"
-    selection: "{{ docker_package_dpkg_selection }}"
-  loop: "{{ [docker_packages, docker_containerd_package] | flatten }}"
-  when: docker_package_dpkg_selection | d()
 
 - name: Create /etc/docker directory
   ansible.builtin.file:
