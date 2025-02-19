@@ -45,13 +45,19 @@ jobs:
         python:
           - "3.10"
           - "3.11"
+          - "3.12"
+          - "3.13"
         ansible:
           - 6
           - 7
           - 8
+          - 9
+          - 10
+          - 11
         distro:
           - ubuntu2004
           - ubuntu2204
+          - ubuntu2404
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
