@@ -50,9 +50,6 @@ jobs:
           - "3.12"
           - "3.13"
         ansible:
-          - 6
-          - 7
-          - 8
           - 9
           - 10
           - 11
@@ -63,20 +60,6 @@ jobs:
         exclude:
           - python: "3.10"
             ansible: 11
-          - python: "3.11"
-            ansible: 6
-          - python: "3.12"
-            ansible: 6
-          - python: "3.12"
-            ansible: 7
-          - python: "3.12"
-            ansible: 8
-          - python: "3.13"
-            ansible: 6
-          - python: "3.13"
-            ansible: 7
-          - python: "3.13"
-            ansible: 8
           - python: "3.13"
             ansible: 9
           - python: "3.13"
@@ -101,7 +84,7 @@ jobs:
           # https://github.com/docker/docker-py/issues/3113
           urllib3<2.0
           # https://github.com/ansible-community/molecule-plugins/issues/256
-          requests<2.32.0
+          #requests<2.32.0
           EOF
           echo "REQS_HASH=$(sha256sum test-requirements.txt | awk '{ print $1 }')" >> "$GITHUB_ENV"
 
