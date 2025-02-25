@@ -38,12 +38,18 @@ jobs:
           ansible-lint
 
   test:
-    name: Test (${{ matrix.distro }})
+    name: Test (py${{ matrix.python }} ansible${{ matrix.ansible }} ${{ matrix.distro }})
     runs-on: ubuntu-latest
     needs:
       - lint
     strategy:
       matrix:
+        python:
+          - "3.12"
+          - "3.13"
+        ansible:
+          - 10
+          - 11
         distro:
           - ubuntu2004
           - ubuntu2204
@@ -57,12 +63,12 @@ jobs:
       - name: Set up Python 3
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: ${{ matrix.python }}
 
       - name: Generate test-requirements.txt
         run: |
           cat <<EOF > test-requirements.txt
-          ansible
+          ansible==${{ matrix.ansible }}.*
           docker
           molecule-plugins[docker]
           EOF
@@ -72,7 +78,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-${{ env.REQS_HASH }}
+          key: ${{ runner.os }}-py${{ matrix.python }}-ansible${{ matrix.ansible }}-${{ env.REQS_HASH }}
 
       - name: Install test dependencies
         run: pip3 install -r test-requirements.txt
