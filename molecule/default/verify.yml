@@ -16,7 +16,7 @@
       changed_when: false
       failed_when: >-
         result.rc != 0 or
-        result.stdout is not match("5:24\.0\.7")
+        result.stdout is not match(docker_package_version)
 
     - name: Ensure specified containerd version is installed
       ansible.builtin.command: dpkg-query -f '${Version}' -W containerd.io
