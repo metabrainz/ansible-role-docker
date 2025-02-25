@@ -1,5 +1,5 @@
 ---
-docker_containerd_package_version: "1.6.24*"
+docker_containerd_package_version: "1.*"
 
 docker_host_daemon_config:
   log-opts:

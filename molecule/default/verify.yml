@@ -24,7 +24,7 @@
       changed_when: false
       failed_when: >-
         result.rc != 0 or
-        result.stdout is not match("1\.6\.24")
+        result.stdout is not match(docker_containerd_package_version)
 
     - name: Ensure Docker is running
       ansible.builtin.service:
