@@ -14,6 +14,9 @@ defaults:
   run:
     working-directory: metabrainz.docker
 
+env:
+  UV_SYSTEM_PYTHON: 1
+
 jobs:
   lint:
     name: Lint
@@ -24,13 +27,20 @@ jobs:
         with:
           path: metabrainz.docker
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.6.3"
+
       - name: Set up Python 3
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
 
       - name: Install dependencies
-        run: pip3 install yamllint ansible ansible-lint
+        run: |
+          uv tool install yamllint
+          uv tool install ansible-lint
 
       - name: Run lint
         run: |
