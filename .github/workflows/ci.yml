@@ -52,6 +52,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - lint
+    env:
+      UV_CACHE_DIR: /tmp/.uv-cache
     strategy:
       matrix:
         python:
@@ -70,31 +72,40 @@ jobs:
         with:
           path: metabrainz.docker
 
+      - name: Install uv and set Python version
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.6.3"
+          python-version: ${{ matrix.python }}
+
       - name: Set up Python 3
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Generate test-requirements.txt
+      - name: Restore uv cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.uv-cache
+          key: uv-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            uv-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+            uv-${{ runner.os }}
+
+      - name: Generate requirements.txt
         run: |
-          cat <<EOF > test-requirements.txt
+          cat <<EOF > requirements.txt
           ansible==${{ matrix.ansible }}.*
           docker
           molecule-plugins[docker]
           EOF
           echo "REQS_HASH=$(sha256sum test-requirements.txt | awk '{ print $1 }')" >> "$GITHUB_ENV"
 
-      - name: Cache pip directory
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-py${{ matrix.python }}-ansible${{ matrix.ansible }}-${{ env.REQS_HASH }}
-
       - name: Install test dependencies
-        run: pip3 install -r test-requirements.txt
+        run: uv pip install -r requirements.txt
 
       - name: Run pip freeze
-        run: pip3 freeze --all
+        run: uv pip freeze
 
       - name: Run tests
         run: molecule test
@@ -102,3 +113,6 @@ jobs:
           ANSIBLE_FORCE_COLOR: 1
           PY_COLORS: 1
           MOLECULE_DISTRO: ${{ matrix.distro }}
+
+      - name: Minimize uv cache
+        run: uv cache prune --ci
