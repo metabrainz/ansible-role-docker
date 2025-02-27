@@ -72,6 +72,15 @@ jobs:
         with:
           path: metabrainz.docker
 
+      - name: Generate requirements.txt
+        run: |
+          cat <<EOF > requirements.txt
+          ansible==${{ matrix.ansible }}.*
+          docker
+          molecule-plugins[docker]
+          EOF
+          echo "REQS_HASH=$(sha256sum requirements.txt | awk '{ print $1 }')" >> "$GITHUB_ENV"
+
       - name: Install uv and set Python version
         uses: astral-sh/setup-uv@v5
         with:
@@ -82,15 +91,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-
-      - name: Generate requirements.txt
-        run: |
-          cat <<EOF > requirements.txt
-          ansible==${{ matrix.ansible }}.*
-          docker
-          molecule-plugins[docker]
-          EOF
-          echo "REQS_HASH=$(sha256sum requirements.txt | awk '{ print $1 }')" >> "$GITHUB_ENV"
 
       - name: Restore uv cache
         uses: actions/cache@v4
