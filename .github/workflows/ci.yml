@@ -93,7 +93,6 @@ jobs:
           echo "REQS_HASH=$(sha256sum requirements.txt | awk '{ print $1 }')" >> "$GITHUB_ENV"
 
       - name: Restore uv cache
-        id: restore-cache
         uses: actions/cache@v4
         with:
           path: ${{ env.UV_CACHE_DIR }}
@@ -103,7 +102,6 @@ jobs:
             uv-${{ runner.os }}
 
       - name: Install test dependencies
-        if: steps.restore-cache.outputs.cache-hit != 'true'
         run: uv pip install -r requirements.txt
 
       - name: Run pip freeze
